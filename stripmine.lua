@@ -121,6 +121,7 @@ local function straightStripmine(n)
         if not anyFreeInventorySlots() then
             print("inventory full; storing items")
 
+            select(1) -- so that the dug block goes into first possible inventory slot
             assert(util.digUntilNonSolid(DOWN), "failed to dig")
             assert(util.selectItem(CONTAINER_TO_PLACE), "no container in inventory")
             assert(util.place(DOWN), "failed to place container")

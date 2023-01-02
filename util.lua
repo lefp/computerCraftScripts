@@ -138,6 +138,7 @@ end
 --     error:   true iff an error was encountered while attempting to mine the ore vein
 -- if an error is encountered while mining the ore vein, attempts to return to the starting position
 function util.mineVein(oreName)
+    turtle.select(1) -- select first slot so that mined items stack into first possible slot
     local moveRecorder = MvmtRec.new()
 
     if not DFS_mine(oreName, moveRecorder) then

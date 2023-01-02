@@ -1,13 +1,22 @@
-local MINING_BLACKLIST = {
-    "minecraft:stone",
-    "minecraft:cobblestone",
-    "quark:deepslate",
-    "minecraft:water",
-    "minecraft:lava",
-    "minecraft:diamond_ore",
-}
-local COLLECTION_BLACKLIST = {"minecraft:cobblestone", "quark:cobbled_deepslate"}
+require("util")
 
+local DO_NOT_DESTROY = {
+    -- containers
+    "minecraft:barrel",
+    "minecraft:chest",
+    "ironchest:iron_chest",
+    "quark:birch_chest",
+}
+-- stuff to throw away if obtained
+local COLLECTION_BLACKLIST = {"minecraft:cobblestone", "quark:cobbled_deepslate"}
+-- ore veins to mine
+local ORES_OF_INTEREST = {
+    "minecraft:coal_ore",
+    "minecraft:iron_ore",
+    "minecraft:gold_ore",
+      "thermal:copper_ore",
+      "thermal:tin_ore",
+}
 -- @todo also use non-coal fuel sources?
 local function refuel()
     for slot = 1,16 do
@@ -52,74 +61,50 @@ local function anyFreeInventorySlots()
 end
 
 -- returns boolean indicating success
-local DigDirection = {
-    FRONT = 1,
-    UP = 2,
-    DOWN = 3,
-}
-local function digIfInventorySpace(digDirection)
+local function digIfInventorySpace(direction)
+    direction = direction or util.FRONT
+
     if not anyFreeInventorySlots() then return false end
     turtle.select(1)
 
-    digDirection = digDirection or DigDirection.FRONT -- default
-
-    if     digDirection == DigDirection.FRONT then return turtle.dig()
-    elseif digDirection == DigDirection.UP    then return turtle.digUp()
-    elseif digDirection == DigDirection.DOWN  then return turtle.digDown()
-    else error("invalid dig direction")
-    end
-end
-
--- mines blocks next to the turtle
--- @todo error-checking? (e.g. return INVENTORY_FULL if out of space)
-local function mineAdjacentResources()
-    local upExists,   upBlock = turtle.inspectUp()
-    local downExists, downBlock = turtle.inspectDown()
-    if upExists   and not inList(upBlock.name  , MINING_BLACKLIST) then digIfInventorySpace(DigDirection.UP)   end
-    if downExists and not inList(downBlock.name, MINING_BLACKLIST) then digIfInventorySpace(DigDirection.DOWN) end
-
-    for _ = 1,4 do
-        assert(turtle.turnLeft(), "failed to turn")
-        local exists, block = turtle.inspect()
-        if exists and not inList(block.name, MINING_BLACKLIST) then digIfInventorySpace() end
-    end
+    return util.dig(direction)
 end
 
 -- dig a straight stripmine of length n
+-- mines out exposed ores of interest
 -- returns (reason for stopping, distance actually travelled)
 local RetReason = {
-    SUCCESS = 1,
-    CANNOT_REFUEL = 2,
-    INVENTORY_FULL = 3,
-    CANNOT_MOVE = 4,
+    SUCCESS = "SUCCESS",
+    CANNOT_REFUEL = "CANNOT_REFUEL",
+    INVENTORY_FULL = "INVENTORY_FULL",
+    CANNOT_MOVE = "CANNOT_MOVE",
 }
 local function straightStripmine(n)
+    local FRONT = util.FRONT
+    local UP    = util.UP
+    local DOWN  = util.DOWN
+
     local distanceTravelled = 0
     while distanceTravelled < n do
-        local blockExists   = turtle.detect()
-        local upBlockExists = turtle.detectUp()
+        discardBlacklistedItems()
 
-        -- dig block if there is one
-        discardBlacklistedItems()
-        if not anyFreeInventorySlots() then return RetReason.INVENTORY_FULL, distanceTravelled end
-        turtle.select(1) -- select first slot so that mined item enters an existing stack if there is one
-        -- loop to handle falling blocks like gravel
-        while blockExists do
-            turtle.dig()
-            blockExists = turtle.detect()
-        end
-        --
-        -- same for block above
-        discardBlacklistedItems()
-        if not anyFreeInventorySlots() then return RetReason.INVENTORY_FULL, distanceTravelled end
-        turtle.select(1)
-        while upBlockExists do
-            turtle.digUp()
-            upBlockExists = turtle.detectUp()
+        -- mine exposed resources of interest
+        for _,direction in ipairs({UP, DOWN, FRONT}) do
+            local exists, block = util.inspect(direction)
+            if exists and inList(block.name, ORES_OF_INTEREST) then
+                util.mineVein(block.name)
+            end
         end
 
-        -- mine exposed resources
-        mineAdjacentResources()
+        -- mine front and top blocks
+        for _,direction in ipairs({FRONT, UP}) do
+            local exists, block = util.inspect(direction)
+            if exists and not inList(block.name, DO_NOT_DESTROY) then
+                if not anyFreeInventorySlots() then return RetReason.INVENTORY_FULL, distanceTravelled end
+                turtle.select(1) -- select first slot so that mined item enters an existing stack if there is one
+                util.digUntilNonSolid(direction)
+            end
+        end
 
         -- refuel if necessary
         if turtle.getFuelLevel() == 0 then
@@ -137,7 +122,8 @@ end
 -- MAIN
 -- @todo a way to clean up lava and water for the player would be good
 -- @todo add to existing stacks in inventory if possible even if there aren't any empty slots
--- @todo handle gravel falling in front of turtle after digging, which prevents forward movement
+-- @todo when inventory is full, place a barrel and dump items into it; then continue
+--    retain one stack of coal and barrels in inventory
 
 local function straightStripmineWithAssert(n)
     local retReason, distanceTravelled = straightStripmine(n)
@@ -148,10 +134,10 @@ local STRIPMINE_LEN = 30
 while true do
     straightStripmineWithAssert(STRIPMINE_LEN)
     turtle.turnLeft()
-    straightStripmineWithAssert(4)
+    straightStripmineWithAssert(5)
     turtle.turnLeft()
     straightStripmineWithAssert(STRIPMINE_LEN)
     turtle.turnRight()
-    straightStripmineWithAssert(4)
+    straightStripmineWithAssert(5)
     turtle.turnRight()
 end

@@ -1,4 +1,5 @@
 require("Stack")
+require("math")
 
 -- MvmtRec provides recorded movement and backtracking functionality
 MvmtRec = {
@@ -41,6 +42,15 @@ function MvmtRec.new()
     function mvmt:turnLeft()   return self:_move(MvmtRec.TURN_LEFT)  end
     function mvmt:turnRight()  return self:_move(MvmtRec.TURN_RIGHT) end
 
+    -- forget the last n moves (default 1)
+    -- if there are fewer than n moves in history, forgets all moves
+    function mvmt:forget(n)
+        n = n or 1
+        n = math.min(n, self._history:size())
+
+        for _ = 1,n do self._history:pop() end
+    end
+
     -- n: number of moves to undo (default 1)
     -- returns (success, n) where
     --   success: true iff n moves were undone
@@ -57,6 +67,9 @@ function MvmtRec.new()
 
         return nMovesUndone == n, nMovesUndone
     end
+    function mvmt:undoAll() return self:undo(self._history:size()) end
+
+    function mvmt:empty() return self._history:empty() end
 
     return mvmt
 end

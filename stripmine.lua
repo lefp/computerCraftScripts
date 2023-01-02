@@ -147,7 +147,6 @@ local function straightStripmine(n)
         for _,direction in ipairs({FRONT, UP}) do
             local exists, block = util.inspect(direction)
             if exists and not inList(block.name, DO_NOT_DESTROY) then
-                if not anyFreeInventorySlots() then return RetReason.INVENTORY_FULL, distanceTravelled end
                 turtle.select(1) -- select first slot so that mined item enters an existing stack if there is one
                 util.digUntilNonSolid(direction)
             end

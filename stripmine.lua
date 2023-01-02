@@ -59,7 +59,7 @@ local DigDirection = {
 }
 local function digIfInventorySpace(digDirection)
     if not anyFreeInventorySlots() then return false end
-    select(1)
+    turtle.select(1)
 
     digDirection = digDirection or DigDirection.FRONT -- default
 

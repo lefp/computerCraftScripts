@@ -89,11 +89,19 @@ local function straightStripmine(n)
         discardBlacklistedItems()
 
         -- mine exposed resources of interest
-        for _,direction in ipairs({UP, DOWN, FRONT}) do
+        for _,direction in ipairs({UP, DOWN}) do
             local exists, block = util.inspect(direction)
             if exists and inList(block.name, ORES_OF_INTEREST) then
                 util.mineVein(block.name)
             end
+        end
+        -- same for front and sides
+        for _ in 1,4 do
+            local exists, block = util.inspect()
+            if exists and inList(block.name, ORES_OF_INTEREST) then
+                util.mineVein(block.name)
+            end
+            assert(turtle.turnLeft(), "failed to turn")
         end
 
         -- mine front and top blocks

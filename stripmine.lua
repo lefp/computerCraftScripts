@@ -99,6 +99,7 @@ local function dropNonEssential(direction)
             end
         end
     end
+    return true
 end
 
 -- dig a straight stripmine of length n

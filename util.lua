@@ -6,24 +6,14 @@ local FRONT = "FRONT"
 local UP = "UP"
 local DOWN = "DOWN"
 
-local inspect     = turtle.inspect
-local inspectUp   = turtle.inspectUp
-local inspectDown = turtle.inspectDown
-local detect      = turtle.detect
-local detectUp    = turtle.detectUp
-local detectDown  = turtle.detectDown
-local dig         = turtle.dig
-local digUp       = turtle.digUp
-local digDown     = turtle.digDown
-
 -- convenience functions with direction as argument
 --
 function util.dig(direction)
     direction = direction or FRONT
 
-    if     direction == FRONT then return dig()
-    elseif direction == UP    then return digUp()
-    elseif direction == DOWN  then return digDown()
+    if     direction == FRONT then return turtle.dig()
+    elseif direction == UP    then return turtle.digUp()
+    elseif direction == DOWN  then return turtle.digDown()
     else error("invalid direction")
     end
 end
@@ -31,9 +21,9 @@ end
 function util.detect(direction)
     direction = direction or FRONT
 
-    if     direction == FRONT then return detect()
-    elseif direction == UP    then return detectUp()
-    elseif direction == DOWN  then return detectDown()
+    if     direction == FRONT then return turtle.detect()
+    elseif direction == UP    then return turtle.detectUp()
+    elseif direction == DOWN  then return turtle.detectDown()
     else error("invalid direction")
     end
 end
@@ -41,9 +31,9 @@ end
 function util.inspect(direction)
     direction = direction or FRONT
 
-    if     direction == FRONT then return inspect()
-    elseif direction == UP    then return inspectUp()
-    elseif direction == DOWN  then return inspectDown()
+    if     direction == FRONT then return turtle.inspect()
+    elseif direction == UP    then return turtle.inspectUp()
+    elseif direction == DOWN  then return turtle.inspectDown()
     else error("invalid direction")
     end
 end
@@ -52,12 +42,16 @@ end
 function util.move(direction)
     direction = direction or FRONT
 
-    if     direction == FRONT then return turtle.forward()
-    elseif direction == UP    then return turtle.up()
-    elseif direction == DOWN  then return turtle.down()
+    if     direction == FRONT then return turtle.turtle.forward()
+    elseif direction == UP    then return turtle.turtle.up()
+    elseif direction == DOWN  then return turtle.turtle.down()
     else error("invalid direction")
     end
 end
+
+local dig     = util.dig
+local detect  = util.detect
+local inspect = util.inspect
 
 -- dig block until it isn't a solid block
 -- for handling falling blocks like gravel
@@ -80,7 +74,7 @@ end
 --     moveRecorder: a MvmtRec object
 local function DFS_mine(targetBlockName, moveRecorder)
     -- up
-    local upExists, upBlock = inspectUp()
+    local upExists, upBlock = inspect(UP)
     if upExists and upBlock.name == targetBlockName then
         if not util.digUntilNonSolid(UP) then return false end
         if not moveRecorder:up() then return false end
@@ -88,7 +82,7 @@ local function DFS_mine(targetBlockName, moveRecorder)
         if not moveRecorder:undo() then return false end
     end
     -- down
-    local downExists, downBlock = inspectDown()
+    local downExists, downBlock = inspect(DOWN)
     if downExists and downBlock == targetBlockName then
         if not util.digUntilNonSolid(DOWN) then return false end
         if not moveRecorder:down() then return false end
@@ -127,7 +121,7 @@ function util.mineVein(oreName)
         return moveRecorder:undoAll(), true
     end
 
-    return moveRecorder:empty(), true
+    return moveRecorder:empty(), false
 end
 
 return util

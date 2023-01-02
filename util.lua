@@ -1,10 +1,14 @@
 require("MvmtRec")
 
-util = {}
+util = {
+    FRONT = "FRONT",
+    UP    = "UP",
+    DOWN  = "DOWN",
+}
 
-local FRONT = "FRONT"
-local UP = "UP"
-local DOWN = "DOWN"
+local FRONT = util.FRONT
+local UP    = util.UP
+local DOWN  = util.DOWN
 
 -- convenience functions with direction as argument
 --

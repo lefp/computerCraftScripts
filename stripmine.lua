@@ -96,7 +96,7 @@ local function straightStripmine(n)
             end
         end
         -- same for front and sides
-        for _ in 1,4 do
+        for _ = 1,4 do
             local exists, block = util.inspect()
             if exists and inList(block.name, ORES_OF_INTEREST) then
                 util.mineVein(block.name)

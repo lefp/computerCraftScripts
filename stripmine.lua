@@ -94,7 +94,7 @@ local function dropNonEssential(direction)
             end
 
             if drop then
-                assert(select(slot), "failed to select slot")
+                assert(turtle.select(slot), "failed to select slot")
                 assert(util.drop(direction), "failed to drop item")
             end
         end

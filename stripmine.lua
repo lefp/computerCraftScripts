@@ -66,6 +66,27 @@ local function digIfInventorySpace(direction)
     return util.dig(direction)
 end
 
+local function dropNonEssential(direction)
+    direction = direction or util.FRONT
+
+    local coalFound = false
+    local barrelsFound = false
+
+    for slot = 1,16 do
+        local item = turtle.getItemDetail(slot, false)
+        if item ~= nil then
+            local drop = false
+
+            if     item.name == "minecraft:coal"   and not coalFound    then coalFound    = true
+            elseif item.name == "minecraft:barrel" and not barrelsFound then barrelsFound = true
+            else drop = true
+            end
+
+            if drop then assert(turtle.drop(direction), "failed to drop item") end
+        end
+    end
+end
+
 -- dig a straight stripmine of length n
 -- mines out exposed ores of interest
 -- returns (reason for stopping, distance actually travelled)
@@ -83,6 +104,17 @@ local function straightStripmine(n)
     local distanceTravelled = 0
     while distanceTravelled < n do
         discardBlacklistedItems()
+
+        -- store items if inventory "full"
+        -- @todo we don't check if it's near lava! But I think barrels aren't destroyed by fire
+        if not anyFreeInventorySlots() then
+            print("inventory full; storing items")
+
+            assert(util.digUntilNonSolid(DOWN), "failed to dig")
+            assert(util.selectItem("minecraft:barrel"), "no barrel in inventory")
+            assert(util.place(DOWN), "failed to place barrel")
+            assert(dropNonEssential(DOWN), "failed to store items")
+        end
 
         -- mine exposed resources of interest
         for _,direction in ipairs({UP, DOWN}) do

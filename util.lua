@@ -48,6 +48,26 @@ function util.move(direction)
     else error("invalid direction")
     end
 end
+--
+function util.place(direction, text)
+    direction = direction or FRONT
+
+    if     direction == FRONT then return turtle.place(text)
+    elseif direction == UP    then return turtle.placeUp(text)
+    elseif direction == DOWN  then return turtle.placeDown(text)
+    else error("invalid direction")
+    end
+end
+--
+function util.drop(direction, count)
+    direction = direction or FRONT
+
+    if     direction == FRONT then return turtle.drop(count)
+    elseif direction == UP    then return turtle.dropUp(count)
+    elseif direction == DOWN  then return turtle.dropDown(count)
+    else error("invalid direction")
+    end
+end
 
 local dig     = util.dig
 local detect  = util.detect

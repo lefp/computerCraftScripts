@@ -107,7 +107,7 @@ local function DFS_mine(targetBlockName, moveRecorder)
     end
     -- down
     local downExists, downBlock = inspect(DOWN)
-    if downExists and downBlock == targetBlockName then
+    if downExists and downBlock.name == targetBlockName then
         if not util.digUntilNonSolid(DOWN) then return false end
         if not moveRecorder:down() then return false end
         if not DFS_mine(targetBlockName, moveRecorder) then return false end

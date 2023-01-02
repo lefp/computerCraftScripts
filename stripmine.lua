@@ -23,7 +23,7 @@ local function refuel()
         print("ran out of fuel")
         return false
     end
-    turtle.refuel(1)
+    turtle.refuel()
     return true
 end
 
@@ -143,7 +143,7 @@ local function straightStripmine(n)
         end
 
         -- refuel if necessary
-        if turtle.getFuelLevel() == 0 then
+        if turtle.getFuelLevel() < 200 then
             if not refuel() then return RetReason.CANNOT_REFUEL, distanceTravelled end
         end
 

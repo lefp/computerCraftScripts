@@ -21,6 +21,13 @@ local ORES_OF_INTEREST = {
       "thermal:copper_ore",
       "thermal:tin_ore",
 }
+
+-- check whether block is an ore
+-- inspectedBlock must be the second return value of a `turtle.inspect` function
+local function isOre(inspectedBlock)
+    return inspectedBlock.tags ~= nil and inspectedBlock.tags["forge:ores"]
+end
+
 -- @todo also use non-coal fuel sources?
 local function refuel()
     if not util.selectItem(FUEL_SOURCE) then
@@ -123,14 +130,14 @@ local function straightStripmine(n)
         -- mine exposed resources of interest
         for _,direction in ipairs({UP, DOWN}) do
             local exists, block = util.inspect(direction)
-            if exists and inList(block.name, ORES_OF_INTEREST) then
+            if exists and isOre(block) then
                 util.mineVein(block.name)
             end
         end
         -- same for front and sides
         for _ = 1,4 do
             local exists, block = util.inspect()
-            if exists and inList(block.name, ORES_OF_INTEREST) then
+            if exists and isOre(block) then
                 util.mineVein(block.name)
             end
             assert(turtle.turnLeft(), "failed to turn")

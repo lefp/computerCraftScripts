@@ -1,5 +1,9 @@
 require("util")
 
+local MIN_FUEL_LEVEL = 200
+local FUEL_SOURCE = "minecraft:coal"
+local CONTAINER_TO_PLACE = "minecraft:barrel"
+
 local DO_NOT_DESTROY = {
     -- containers
     "minecraft:barrel",
@@ -19,7 +23,7 @@ local ORES_OF_INTEREST = {
 }
 -- @todo also use non-coal fuel sources?
 local function refuel()
-    if not util.selectItem("minecraft:coal") then
+    if not util.selectItem(FUEL_SOURCE) then
         print("ran out of fuel")
         return false
     end
@@ -69,16 +73,16 @@ end
 local function dropNonEssential(direction)
     direction = direction or util.FRONT
 
-    local coalFound = false
-    local barrelsFound = false
+    local fuelFound      = false
+    local containerFound = false
 
     for slot = 1,16 do
         local item = turtle.getItemDetail(slot, false)
         if item ~= nil then
             local drop = false
 
-            if     item.name == "minecraft:coal"   and not coalFound    then coalFound    = true
-            elseif item.name == "minecraft:barrel" and not barrelsFound then barrelsFound = true
+            if     item.name == FUEL_SOURCE        and not fuelFound      then fuelFound    = true
+            elseif item.name == CONTAINER_TO_PLACE and not containerFound then containerFound = true
             else drop = true
             end
 
@@ -106,13 +110,13 @@ local function straightStripmine(n)
         discardBlacklistedItems()
 
         -- store items if inventory "full"
-        -- @todo we don't check if it's near lava! But I think barrels aren't destroyed by fire
+        -- @todo we don't check if it's near lava! But I think e.g. barrels aren't destroyed by fire
         if not anyFreeInventorySlots() then
             print("inventory full; storing items")
 
             assert(util.digUntilNonSolid(DOWN), "failed to dig")
-            assert(util.selectItem("minecraft:barrel"), "no barrel in inventory")
-            assert(util.place(DOWN), "failed to place barrel")
+            assert(util.selectItem(CONTAINER_TO_PLACE), "no container in inventory")
+            assert(util.place(DOWN), "failed to place container")
             assert(dropNonEssential(DOWN), "failed to store items")
         end
 
@@ -143,7 +147,7 @@ local function straightStripmine(n)
         end
 
         -- refuel if necessary
-        if turtle.getFuelLevel() < 200 then
+        if turtle.getFuelLevel() <= MIN_FUEL_LEVEL then
             if not refuel() then return RetReason.CANNOT_REFUEL, distanceTravelled end
         end
 
@@ -158,8 +162,6 @@ end
 -- MAIN
 -- @todo a way to clean up lava and water for the player would be good
 -- @todo add to existing stacks in inventory if possible even if there aren't any empty slots
--- @todo when inventory is full, place a barrel and dump items into it; then continue
---    retain one stack of coal and barrels in inventory
 
 local function straightStripmineWithAssert(n)
     local retReason, distanceTravelled = straightStripmine(n)

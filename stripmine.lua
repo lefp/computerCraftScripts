@@ -19,16 +19,12 @@ local ORES_OF_INTEREST = {
 }
 -- @todo also use non-coal fuel sources?
 local function refuel()
-    for slot = 1,16 do
-        local item = turtle.getItemDetail(slot, false)
-        if item ~= nil and item.name == "minecraft:coal" then
-            turtle.select(slot)
-            return turtle.refuel(1)
-        end
+    if not util.selectItem("minecraft:coal") then
+        print("ran out of fuel")
+        return false
     end
-
-    print("ran out of fuel")
-    return false
+    turtle.refuel(1)
+    return true
 end
 
 local function inList(x, list)

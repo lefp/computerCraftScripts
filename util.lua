@@ -124,4 +124,19 @@ function util.mineVein(oreName)
     return moveRecorder:empty(), false
 end
 
+-- selects the slot containing the item
+-- returns false iff that item isn't in the inventory
+-- e.g.: selectItem("minecraft:coal")
+function util.selectItem(itemName)
+    for slot = 1,16 do
+        local item = turtle.getItemDetail(slot)
+        if item ~= nil and item.name == itemName then
+            turtle.select(slot)
+            return true
+        end
+    end
+
+    return false
+end
+
 return util

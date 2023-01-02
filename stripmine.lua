@@ -93,7 +93,10 @@ local function dropNonEssential(direction)
             else drop = true
             end
 
-            if drop then assert(util.drop(direction), "failed to drop item") end
+            if drop then
+                assert(select(slot), "failed to select slot")
+                assert(util.drop(direction), "failed to drop item")
+            end
         end
     end
 end

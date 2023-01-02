@@ -35,12 +35,12 @@ function MvmtRec.new()
     end
 
     -- convenience functions wrapping _move
-    function mvmt:forward()    return self:_move(MvmtRec.FORWARD)    end
-    function mvmt:back()       return self:_move(MvmtRec.BACK)       end
-    function mvmt:up()         return self:_move(MvmtRec.UP)         end
-    function mvmt:down()       return self:_move(MvmtRec.DOWN)       end
-    function mvmt:turnLeft()   return self:_move(MvmtRec.TURN_LEFT)  end
-    function mvmt:turnRight()  return self:_move(MvmtRec.TURN_RIGHT) end
+    function mvmt:forward()   return self:_move(MvmtRec.FORWARD)    end
+    function mvmt:back()      return self:_move(MvmtRec.BACK)       end
+    function mvmt:up()        return self:_move(MvmtRec.UP)         end
+    function mvmt:down()      return self:_move(MvmtRec.DOWN)       end
+    function mvmt:turnLeft()  return self:_move(MvmtRec.TURN_LEFT)  end
+    function mvmt:turnRight() return self:_move(MvmtRec.TURN_RIGHT) end
 
     -- forget the last n moves (default 1)
     -- if there are fewer than n moves in history, forgets all moves

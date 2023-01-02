@@ -98,7 +98,7 @@ local function DFS_mine(targetBlockName, moveRecorder)
             if not DFS_mine(targetBlockName, moveRecorder) then return false end
             if not moveRecorder:undo() then return false end
         end
-        assert(moveRecorder.turnLeft(), "failed to turn")
+        assert(moveRecorder:turnLeft(), "failed to turn")
     end
     -- we just did 4 left turns; the movement recorder doesn't need to backtrack through them
     moveRecorder:forget(4)

@@ -4,23 +4,20 @@ local MIN_FUEL_LEVEL = 200
 local FUEL_SOURCE = "minecraft:coal"
 local CONTAINER_TO_PLACE = "minecraft:barrel"
 
-local DO_NOT_DESTROY = {
+-- @todo need a more general way of avoiding container destruction
+local DO_NOT_DESTROY = { -- blocks to not destroy under any circumstances
     -- containers
     "minecraft:barrel",
     "minecraft:chest",
     "ironchest:iron_chest",
     "quark:birch_chest",
 }
+local DO_NOT_HARVEST = { -- ores to avoid harvesting, but can e.g. tunnel through them if they're in the way
+    "minecraft:diamond_ore",
+    "minecraft:emerald_ore",
+}
 -- stuff to throw away if obtained
 local COLLECTION_BLACKLIST = {"minecraft:cobblestone", "quark:cobbled_deepslate"}
--- ore veins to mine
-local ORES_OF_INTEREST = {
-    "minecraft:coal_ore",
-    "minecraft:iron_ore",
-    "minecraft:gold_ore",
-      "thermal:copper_ore",
-      "thermal:tin_ore",
-}
 
 -- check whether block is an ore
 -- inspectedBlock must be the second return value of a `turtle.inspect` function
@@ -41,6 +38,13 @@ end
 local function inList(x, list)
     for _,listItem in ipairs(list) do
         if x == listItem then return true end
+    end
+    return false
+end
+
+local function inLists(x, listOfLists)
+    for _,list in ipairs(listOfLists) do
+        if inList(x, list) then return true end
     end
     return false
 end
@@ -135,14 +139,14 @@ local function straightStripmine(n)
         -- mine exposed resources of interest
         for _,direction in ipairs({UP, DOWN}) do
             local exists, block = util.inspect(direction)
-            if exists and isOre(block) then
+            if exists and isOre(block) and not inLists(block.name, {DO_NOT_HARVEST, DO_NOT_DESTROY}) then
                 util.mineVein(block.name)
             end
         end
         -- same for front and sides
         for _ = 1,4 do
             local exists, block = util.inspect()
-            if exists and isOre(block) then
+            if exists and isOre(block) and not inLists(block.name, {DO_NOT_HARVEST, DO_NOT_DESTROY}) then
                 util.mineVein(block.name)
             end
             assert(turtle.turnLeft(), "failed to turn")
@@ -152,7 +156,7 @@ local function straightStripmine(n)
         for _,direction in ipairs({FRONT, UP}) do
             local exists, block = util.inspect(direction)
             if exists and not inList(block.name, DO_NOT_DESTROY) then
-                turtle.select(1) -- select first slot so that mined item enters an existing stack if there is one
+                turtle.select(1) -- so that mined item enters an existing stack if there is one
                 util.digUntilNonSolid(direction)
             end
         end

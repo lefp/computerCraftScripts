@@ -85,6 +85,7 @@ function util.digUntilNonSolid(direction)
 
     while detect(direction) do
         if not dig(direction) then return false end
+        sleep(1) -- give falling entity a second to become a block
     end
 
     return true

@@ -41,13 +41,13 @@ if HEIGHT < 0 then HEIGHT_DIRECTION = DOWN end
 WIDTH  = math.abs(DEPTH)
 HEIGHT = math.abs(DEPTH)
 
-for _ = 2,WIDTH do
-    for _ = 2,DEPTH do
-        for _ = 2,HEIGHT do
+for _i = 2,WIDTH do
+    for _j = 2,DEPTH do
+        for _k = 2,HEIGHT do
             assert(util.digUntilNonSolid(HEIGHT_DIRECTION))
             assert(util.move(HEIGHT_DIRECTION))
-            HEIGHT_DIRECTION = inverse(HEIGHT_DIRECTION)
         end
+        HEIGHT_DIRECTION = inverse(HEIGHT_DIRECTION)
         assert(util.digUntilNonSolid())
         assert(turtle.forward())
     end

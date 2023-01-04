@@ -38,8 +38,8 @@ local heightDirection = UP
 if WIDTH  < 0 then widthDirection  = LEFT end
 if HEIGHT < 0 then heightDirection = DOWN end
 --
-WIDTH  = math.abs(DEPTH)
-HEIGHT = math.abs(DEPTH)
+WIDTH  = math.abs(WIDTH)
+HEIGHT = math.abs(HEIGHT)
 
 local function verticalSection()
     for _ = 2,HEIGHT do

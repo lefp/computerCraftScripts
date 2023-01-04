@@ -46,9 +46,9 @@ end
 function util.move(direction)
     direction = direction or FRONT
 
-    if     direction == FRONT then return turtle.turtle.forward()
-    elseif direction == UP    then return turtle.turtle.up()
-    elseif direction == DOWN  then return turtle.turtle.down()
+    if     direction == FRONT then return turtle.forward()
+    elseif direction == UP    then return turtle.up()
+    elseif direction == DOWN  then return turtle.down()
     else error("invalid direction")
     end
 end

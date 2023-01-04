@@ -48,7 +48,7 @@ local function verticalSection(hDirection)
     end
     heightDirection = inverse(heightDirection)
 end
-for _i = 2,WIDTH do
+for _i = 1,WIDTH do
     for _j = 2,DEPTH do
         verticalSection(heightDirection)
         assert(util.digUntilNonSolid())

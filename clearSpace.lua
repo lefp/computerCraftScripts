@@ -32,28 +32,32 @@ assert(DEPTH  >  0, "depth must be positive")
 assert(WIDTH  ~= 0, "width  can't be 0")
 assert(HEIGHT ~= 0, "height can't be 0")
 
-local WIDTH_DIRECTION  = RIGHT
-local HEIGHT_DIRECTION = UP
+local widthDirection  = RIGHT
+local heightDirection = UP
 --
 if WIDTH  < 0 then DEPTH_DIRECTION  = LEFT end
-if HEIGHT < 0 then HEIGHT_DIRECTION = DOWN end
+if HEIGHT < 0 then heightDirection = DOWN end
 --
 WIDTH  = math.abs(DEPTH)
 HEIGHT = math.abs(DEPTH)
 
+local function verticalSection(hDirection)
+    for _ = 2,HEIGHT do
+        assert(util.digUntilNonSolid(hDirection))
+        assert(util.move(hDirection))
+    end
+end
 for _i = 2,WIDTH do
     for _j = 2,DEPTH do
-        for _k = 2,HEIGHT do
-            assert(util.digUntilNonSolid(HEIGHT_DIRECTION))
-            assert(util.move(HEIGHT_DIRECTION))
-        end
-        HEIGHT_DIRECTION = inverse(HEIGHT_DIRECTION)
+        verticalSection(heightDirection)
+        heightDirection = inverse(heightDirection)
         assert(util.digUntilNonSolid())
         assert(turtle.forward())
     end
-    assert(turn(WIDTH_DIRECTION))
+    verticalSection(heightDirection)
+    assert(turn(widthDirection))
     assert(util.digUntilNonSolid())
     assert(turtle.forward())
-    assert(turn(WIDTH_DIRECTION))
-    WIDTH_DIRECTION = inverse(WIDTH_DIRECTION)
+    assert(turn(widthDirection))
+    widthDirection = inverse(widthDirection)
 end

@@ -46,11 +46,11 @@ local function verticalSection(hDirection)
         assert(util.digUntilNonSolid(hDirection))
         assert(util.move(hDirection))
     end
+    heightDirection = inverse(heightDirection)
 end
 for _i = 2,WIDTH do
     for _j = 2,DEPTH do
         verticalSection(heightDirection)
-        heightDirection = inverse(heightDirection)
         assert(util.digUntilNonSolid())
         assert(turtle.forward())
     end

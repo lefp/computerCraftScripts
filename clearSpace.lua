@@ -35,7 +35,7 @@ assert(HEIGHT ~= 0, "height can't be 0")
 local widthDirection  = RIGHT
 local heightDirection = UP
 --
-if WIDTH  < 0 then DEPTH_DIRECTION  = LEFT end
+if WIDTH  < 0 then widthDirection  = LEFT end
 if HEIGHT < 0 then heightDirection = DOWN end
 --
 WIDTH  = math.abs(DEPTH)

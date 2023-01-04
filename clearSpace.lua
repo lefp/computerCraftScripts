@@ -10,8 +10,8 @@ local UP   = util.UP
 local DOWN = util.DOWN
 
 local function turn(turnDirection)
-    if     turnDirection == LEFT  then assert(turtle.turnLeft() , "failed to turn")
-    elseif turnDirection == RIGHT then assert(turtle.turnRight(), "failed to turn")
+    if     turnDirection == LEFT  then return turtle.turnLeft() 
+    elseif turnDirection == RIGHT then return turtle.turnRight()
     else error("invalid direction")
     end
 end

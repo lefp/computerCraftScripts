@@ -41,20 +41,20 @@ if HEIGHT < 0 then heightDirection = DOWN end
 WIDTH  = math.abs(DEPTH)
 HEIGHT = math.abs(DEPTH)
 
-local function verticalSection(hDirection)
+local function verticalSection()
     for _ = 2,HEIGHT do
-        assert(util.digUntilNonSolid(hDirection))
-        assert(util.move(hDirection))
+        assert(util.digUntilNonSolid(heightDirection))
+        assert(util.move(heightDirection))
     end
     heightDirection = inverse(heightDirection)
 end
 for _i = 1,WIDTH do
     for _j = 2,DEPTH do
-        verticalSection(heightDirection)
+        verticalSection()
         assert(util.digUntilNonSolid())
         assert(turtle.forward())
     end
-    verticalSection(heightDirection)
+    verticalSection()
     assert(turn(widthDirection))
     assert(util.digUntilNonSolid())
     assert(turtle.forward())
